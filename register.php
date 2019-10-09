@@ -5,7 +5,7 @@ require_once('config.php');
 
 if (isset($_POST['login'])) {
 
-    $login = $_POST['login'];
+    $login = htmlspecialchars( $_POST['login']);
 
     //Connection to DB
     $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
@@ -14,13 +14,6 @@ if (isset($_POST['login'])) {
         echo "We have a problem with Database connect. Contact with support.";
     }
 
-
-    if (!$connect) {
-        echo "Error: Unable to connect to MySQL." . PHP_EOL;
-        echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
-        echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
-        exit();
-    }
 
     $checkFields = true;
 
@@ -33,20 +26,52 @@ if (isset($_POST['login'])) {
 
     }
 
+    if (isset($_POST['login'])){
+         $loginCheckResult = $connect->query("SELECT id FROM users WHERE login='$login'");
+            if (!$loginCheckResult) {
+                throw new Exception($connect->error);
+            }
+
+         $loginAmount = $loginCheckResult->num_rows;
+        
+        if ($loginAmount > 0) {
+            $_SESSION['e_login'] = '<span style="color: red">Podany login już jest zajęty.</span><br>';
+            $checkFields = false;
+
+            // $connect->close();
+        }
+    }
+
     if (isset($_POST['email'])) {
                     
                 
         $email = htmlspecialchars($_POST['email']);
         $regEx = '/^[^\W][a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\@[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\.[a-zA-Z]{2,4}$/';
 
-        if (preg_match($regEx, $email) ) {
-            
-        }
-        else{
-            $_SESSION['e_email'] = '<span style="color: red">Niepoprawny adres email.</span><br>';
+        $emailCheckResult = $connect->query("SELECT id FROM users WHERE email='$email'");
+            if (!$emailCheckResult) {
+                throw new Exception($connect->error);
+            }
 
+        $emailAmount = $emailCheckResult->num_rows;
+        
+        if ($emailAmount > 0) {
+            $_SESSION['e_email'] = '<span style="color: red">Podany adres email już jest zajęty.</span><br>';
             $checkFields = false;
+
+            // $connect->close();
         }
+
+
+
+            if (preg_match($regEx, $email) ) {
+                
+            }
+            else{
+                $_SESSION['e_email'] = '<span style="color: red">Niepoprawny adres email.</span><br>';
+
+                $checkFields = false;
+            }
     }
 
     if (isset($_POST['password'])) {
@@ -54,7 +79,7 @@ if (isset($_POST['login'])) {
         $password = htmlspecialchars($_POST['password']); 
         $password_hashed = password_hash($password, PASSWORD_DEFAULT);
         
-        if (strlen($password) < 8 || strlen($password) > 16) {
+        if (strlen($password) < 3 || strlen($password) > 16) {
             
             $_SESSION['e_password'] = '<span style="color: red">Niewłaściwy format hasła.</span><br><br>';
 
@@ -66,12 +91,14 @@ if (isset($_POST['login'])) {
     if ($checkFields == true) {
         
         $connect->query("INSERT INTO users VALUES (NULL, '$login', '$email', '$password_hashed') ");
-        header('Location: index.php');
         
+        $connect->close();
+
+        header('Location: index.php');
 
     }
     
-    
+    $connect->close();
 }
 
 
@@ -117,6 +144,7 @@ if (isset($_POST['login'])) {
                 }             
             ?>
 
+            <br>
             <button type="button"><a href="/sons/index.php">Anuluj</a></button>
             <button type="submit">Register</button>               
 
