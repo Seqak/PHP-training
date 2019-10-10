@@ -30,14 +30,15 @@ if (isset($_POST['login'])) {
             echo "Hasło się zgadza. ZALOGOWANO do konta gracza " . $login;
         }
         else{
-            echo "Login ok, ale hasło chujowe.";
+            // require_once('index.php');
+            $_SESSION['e_password'] = '<span style="color: red">Błędne hasło.</span><br>';
         }
 
     }
     else{
-        echo "Nie ma takiego chłopa w DB, albo coś się zjebało z hasłem";
+        // require_once('index.php');
+        $_SESSION['e_login'] = '<span style="color: red">Brak użytkownika o takim loginie.</span><br>';
     }
 
 
 }
-
