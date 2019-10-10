@@ -33,9 +33,15 @@ elseif (isset($_POST['login'])) {
         if (password_verify($password, $row['password']) == true) {
             header("Location: app.php");
 
+            $_SESSION['id'] = $row['id'];
+            $_SESSION['login'] = $row['login'];
+            $_SESSION['logged'] = true;
+
             $connect->close();
+            exit();
         }
         else{
+            $_GET['login'] = $login;
             $_SESSION['e_password'] = '<span style="color: red">Błędne hasło.</span><br>';
         }
 
