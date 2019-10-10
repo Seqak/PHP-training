@@ -75,9 +75,9 @@ if (isset($_POST['login'])) {
     }
 
     if (isset($_POST['password'])) {
+
+        $password = htmlspecialchars($_POST['password']);
                     
-        $password = htmlspecialchars($_POST['password']); 
-        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
         
         if (strlen($password) < 3 || strlen($password) > 16) {
             
@@ -85,6 +85,13 @@ if (isset($_POST['login'])) {
 
             $checkFields = false;
         }
+
+        if ( !isset($_POST['password2']) || $password != htmlspecialchars($_POST['password2'])) {
+            $_SESSION['e_password2'] = '<span style="color: red">Hasła muszą być takie same.</span><br>';
+            $checkFields = false;
+        }
+
+        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
     }
     
     //Insert user to DB
@@ -136,11 +143,20 @@ if (isset($_POST['login'])) {
 
             <br><label>Password</label><br>
             <input type="password" name="password" placeholder="Password"><br>
-            <small><span style="color: #666666;">Hasło musi mieć przynajmeniej 8 znaków. Max 16.</span></small><br>
+            <small><span style="color: #666666;">Hasło musi mieć przynajmeniej 3 znaki. Max 16.</span></small><br>
 
             <?php
                 if (isset($_SESSION['e_password'])) {
                     echo $_SESSION['e_password'];unset($_SESSION['e_password']);   
+                }             
+            ?>
+
+            <br><label>Repeat Password</label><br>
+            <input type="password" name="password2" placeholder="Password"><br>
+
+            <?php
+                if (isset($_SESSION['e_password2'])) {
+                    echo $_SESSION['e_password2'];unset($_SESSION['e_password2']);   
                 }             
             ?>
 
