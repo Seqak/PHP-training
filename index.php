@@ -33,7 +33,7 @@ elseif (isset($_POST['login'])) {
         if (password_verify($password, $row['password']) == true) {
             header("Location: app.php");
 
-            $_SESSION['id'] = $row['id'];
+            $_SESSION['id'] = $row['userid'];
             $_SESSION['login'] = $row['login'];
             $_SESSION['logged'] = true;
 
@@ -58,6 +58,7 @@ elseif (isset($_POST['login'])) {
     <head>
         <title>Siema</title>
         <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <h2>Home | </h2> <a href="register.php"><h3>Register now!</h3></a>
