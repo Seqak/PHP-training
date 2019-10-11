@@ -5,10 +5,11 @@ require_once('config.php');
 
 if (isset($_POST['login'])) {
 
+
     $login = htmlspecialchars( $_POST['login']);
 
     //Connection to DB
-    $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
+    $connect = new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
 
     if ($connect->connect_errno != 0) {
         echo "We have a problem with Database connect. Contact with support.";
@@ -27,7 +28,7 @@ if (isset($_POST['login'])) {
     }
 
     if (isset($_POST['login'])){
-         $loginCheckResult = $connect->query("SELECT id FROM users WHERE login='$login'");
+         $loginCheckResult = $connect->query("SELECT userid FROM users WHERE login='$login'");
             if (!$loginCheckResult) {
                 throw new Exception($connect->error);
             }
@@ -37,8 +38,6 @@ if (isset($_POST['login'])) {
         if ($loginAmount > 0) {
             $_SESSION['e_login'] = '<span style="color: red">Podany login już jest zajęty.</span><br>';
             $checkFields = false;
-
-            // $connect->close();
         }
     }
 
@@ -48,7 +47,7 @@ if (isset($_POST['login'])) {
         $email = htmlspecialchars($_POST['email']);
         $regEx = '/^[^\W][a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\@[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\.[a-zA-Z]{2,4}$/';
 
-        $emailCheckResult = $connect->query("SELECT id FROM users WHERE email='$email'");
+        $emailCheckResult = $connect->query("SELECT userid FROM users WHERE email='$email'");
             if (!$emailCheckResult) {
                 throw new Exception($connect->error);
             }
@@ -58,8 +57,7 @@ if (isset($_POST['login'])) {
         if ($emailAmount > 0) {
             $_SESSION['e_email'] = '<span style="color: red">Podany adres email już jest zajęty.</span><br>';
             $checkFields = false;
-
-            // $connect->close();
+            $connect->close();
         }
 
 
@@ -106,7 +104,7 @@ if (isset($_POST['login'])) {
     }
     
     $connect->close();
-    exit();
+    
 }
 
 
