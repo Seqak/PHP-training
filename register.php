@@ -28,7 +28,7 @@ if (isset($_POST['login'])) {
     }
 
     if (isset($_POST['login'])){
-         $loginCheckResult = $connect->query("SELECT userid FROM users WHERE login='$login'");
+         $loginCheckResult = $connect->query("SELECT user_id FROM users WHERE login='$login'");
             if (!$loginCheckResult) {
                 throw new Exception($connect->error);
             }
@@ -47,7 +47,7 @@ if (isset($_POST['login'])) {
         $email = htmlspecialchars($_POST['email']);
         $regEx = '/^[^\W][a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\@[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\.[a-zA-Z]{2,4}$/';
 
-        $emailCheckResult = $connect->query("SELECT userid FROM users WHERE email='$email'");
+        $emailCheckResult = $connect->query("SELECT user_id FROM users WHERE email='$email'");
             if (!$emailCheckResult) {
                 throw new Exception($connect->error);
             }
@@ -95,7 +95,7 @@ if (isset($_POST['login'])) {
     //Insert user to DB
     if ($checkFields == true) {
         
-        $connect->query("INSERT INTO users VALUES (NULL, '$login', '$email', '$password_hashed') ");
+        $connect->query("INSERT INTO users VALUES (NULL, '$login', '$email', '$password_hashed', 0, 1) ");
         
         $connect->close();
 

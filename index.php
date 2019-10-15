@@ -33,7 +33,7 @@ elseif (isset($_POST['login'])) {
         if (password_verify($password, $row['password']) == true) {
             header("Location: app.php");
 
-            $_SESSION['id'] = $row['userid'];
+            $_SESSION['user_id'] = $row['userid'];
             $_SESSION['login'] = $row['login'];
             $_SESSION['logged'] = true;
 
@@ -80,7 +80,7 @@ elseif (isset($_POST['login'])) {
             <button type="submit" name="submit-btn">Login</button>
 
         </form>
-
+    
         
     </body>
 
