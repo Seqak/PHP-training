@@ -56,3 +56,25 @@ a{
     transform: scale(1.0);
     transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
 }
+
+.character-form{
+    background-color: aquamarine;
+    width: 300px;
+    padding: 20px;
+    float: right;
+    margin-right: 150px;
+    margin-top: 70px;
+}
+
+.character-form h2{
+    margin: 0;
+    padding: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.main-form{
+    width: 200px;
+    height: 200px;
+    
+}
