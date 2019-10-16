@@ -34,6 +34,7 @@ elseif (isset($_POST['login'])) {
             
 
             $_SESSION['userid'] = $row['user_id'];
+            $_SESSION['herofkid'] = $row['hero_id'];
             $_SESSION['login'] = $row['login'];
             $_SESSION['logged'] = true;
 
