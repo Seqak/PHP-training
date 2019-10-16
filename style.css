@@ -78,3 +78,20 @@ a{
     height: 200px;
     
 }
+
+.close-btn{
+    width: 25px;
+    height: 25px;
+    background-color: #666;
+    color: #ccc;
+    text-align: center;
+    box-sizing: border-box;
+    border: none;
+    padding-left: 6px;
+    float: right;
+}
+
+.close-btn:hover{
+    background-color: #666;
+    cursor: pointer;
+}
