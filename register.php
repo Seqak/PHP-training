@@ -95,7 +95,7 @@ if (isset($_POST['login'])) {
     //Insert user to DB
     if ($checkFields == true) {
         
-        $connect->query("INSERT INTO users VALUES (NULL, '$login', '$email', '$password_hashed', 0, 1) ");
+        $connect->query("INSERT INTO users VALUES (NULL, '$login', '$email', '$password_hashed', 0, NULL) ");
         
         $connect->close();
 
