@@ -10,6 +10,7 @@ if (!$_SESSION['logged']) {
 
 $userID = $_SESSION['userid'];
 $userLogin = $_SESSION['login'];
+$herofkId1 = $_SESSION['herofkid'];
 
 echo "Zalogowano do konta gracza " . "<span style='color: blue'><strong>$userLogin</strong></span> ". "<br><br>";
 
@@ -22,68 +23,133 @@ if (isset($_POST['logout-btn'])) {
 
 //Create a new character.
 
-if (isset($_POST['test-btn'])) {
+if (isset($_POST['create-hero-btn'])) {
 
     echo '  
     <div class="character-form">
+
+    <form action="app.php" method="POST">
+    <button class="close-btn" type="submit">X</button>
+    </form>
+    
     <form action="app.php" method="POST">
     <h2>Stwórz postać</h2>
         <label>Imię postaci:</label><br>
-        <input type="text" name="cname"><br><br>
+        <input type="text" name="hero-name"><br>
+        <?php
+        if (isset($_SESSION[""e_hero_name""])) {
+            echo $_SESSION["e_hero_name"];unset($_SESSION["e_hero_name"]);
+        }
+    ?>
+    <br>
 
         <label>Wybierz klasę</label><br>
-        <select name="character-class""><br>
+        <select name="hero-class-select""><br>
             <option value="warrior">Wojownik</option>
             <option value="wizard">Mag</option>
         </select>
 
-        <br><br><button type="submit" name="oko">Stwórz!</button>
+        <br><br><button type="submit" name="add-hero-btn">Stwórz!</button>
     
-    </form></div>
-';
-
-    // if (isset($_POST['cname'])) {
-
-    //     // echo "IMIE: ". $_POST['cname'];
-
-    //     // $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
-    //     // $connect->query("UPDATE users SET hero=1 WHERE user_id=8 ");
-
-    //     // header("Location: app.php");
-    // }
-
-
-}
-else{
-
+    </form></div>';
 }
 
 
-if (isset($_POST['cname'])) {
+if (isset($_POST['hero-name'])) {
 
-    // echo "IMIE: ". $_POST['cname'];
-
+    $heroName = htmlspecialchars($_POST['hero-name']);
     $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
-    $connect->query("UPDATE users SET hero=1 WHERE user_id='$userID' ");
+    $heroNameQuery = $connect->query("SELECT hero_id FROM hero WHERE name='$heroName'");
 
-    header("Location: app.php");
+    $heroNameResult = $heroNameQuery->num_rows;
+    echo "Ilość rezultów " . $heroNameResult;
+    if ($heroNameResult > 0) {
+        $_SESSION["e_hero_name"] = '<span style="color: red">Podana nazwa już jest zajęta.</span><br>';
+
+        echo '  
+    <div class="character-form">
+
+    <form action="app.php" method="POST">
+    <button class="close-btn" type="submit">X</button>
+    </form>
+    
+    <form action="app.php" method="POST">
+    <h2>Stwórz postać</h2>
+        <label>Imię postaci:</label><br>
+        <input type="text" name="hero-name"><br>
+        '. $_SESSION["e_hero_name"]. '
+    <br>
+
+        <label>Wybierz klasę</label><br>
+        <select name="hero-class-select""><br>
+            <option value="warrior">Wojownik</option>
+            <option value="wizard">Mag</option>
+        </select>
+
+        <br><br><button type="submit" name="add-hero-btn">Stwórz!</button>
+    
+    </form></div>';
+    }
+    else{
+
+        if (isset($_POST['hero-class-select'])) {
+            $heroClass = $_POST['hero-class-select'];  
+        }
+        
+        $connect->query("INSERT INTO hero VALUES (NULL, '$heroName', '$heroClass', 10, 10, 0, 1)");
+
+        $heroFkQuery = $connect->query("SELECT hero_id FROM hero WHERE name='$heroName'");
+        $heroFkResult = $heroFkQuery->fetch_assoc();
+        $heroFkId = $heroFkResult['hero_id'];
+        $connect->query("UPDATE users SET hero=1, hero_id='$heroFkId' WHERE user_id='$userID' ");
+
+        //Rozwiązanie problemu: Zrobienie zmiennej sesyjnej, ustawienie jej i unset!!!
+    }    
+}else{
+
+}
+
+echo "ID hero test: " . $herofkId1;
+
+//Display info about a created character.
+
+if (isset($_POST['hero-info-btn'])) {
+
+    
+
+    //$heroFkId = $_SESSION['a'];
+    // $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
+    // $heroInfoQuery = $connect->query("SELECT * FROM hero WHERE hero_id='$heroFkId'");
+    // $heroInfoResult = $heroInfoQuery->fetch_assoc();
+
+    //var_dump($heroInfoResult);
+
+    //echo $_SESSION['testid'];
+
+    echo ' 
+    <div class="character-form">
+
+    <form action="app.php" method="POST">
+    <button class="close-btn" type="submit">X</button>
+    </form>
+
+    <form action="app.php" method="POST">
+    <h2>Postać</h2>
+    <strong>Nazwa: </strong> Seq <br><br>
+    <strong>Klasa: </strong> Wojownik<br><br>
+            <br><button type="submit" name="delete-hero-btn"><span style="color: red">Usuń Postać</span></button>
+        </div>
+    </div>
+    </form>';
+
+    
 }
 
 
-// $hero = new \Hero\Hero();
-
-// if(isset($_POST['create-btn'])){
-//     $fieldsOk = true;
-
-//     if (!isset($_POST['character-name'])) {
-//         $fieldsOk = false;
-//         $_SESSION["e_name"] = '<span style="color: red">Podaj nazwę postaci</span>';
-//     }
-//     // $hero->setName($_POST['character-name']);
-// }
-// $_SESSION["e_name"] = '<span style="color: red">Podaj nazwę postaci</span>';
-
-
+if (isset($_POST['delete-hero-btn'])) {
+    $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
+    $connect->query("UPDATE users SET hero=0 WHERE user_id='$userID' ");
+}
 
 
 
@@ -122,24 +188,13 @@ if (isset($_POST['cname'])) {
 
             if ($heroStatus == 0) {
                echo '<form action="app.php" method="POST">
-               <button type="submit" name="test-btn">Stwórz postać</button>
+               <button type="submit" name="create-hero-btn">Stwórz postać</button>
                </form>'; 
             }
             else{
                 echo '
-                <button class="trigger">Pokaż postać</button>
                 <form action="app.php" method="POST">
-                <div class="modal">
-                    <div class="modal-content">
-                        <span class="close-button">×</span>
-                        <h1>Postać</h1>
-
-                        <p><strong>IMIE: </strong> Seq</p>
-                        <p><strong>KLASA: </strong> Wojownik</p><br>
-                        
-                        <br><button type="submit" name="delete-btn"><span style="color: red">Usuń Postać</span></button>
-                    </div>
-                </div>
+                <button name="hero-info-btn" class="trigger" >Pokaż postać</button>
                 </form>'; 
             }
            
@@ -155,6 +210,8 @@ if (isset($_POST['cname'])) {
             <!-- <button type="submit" name="db-btn">Dodaj do DB</button> -->
         </form>
         </div>
+
+        
 
         <script src="main.js"> </script>
     </body>

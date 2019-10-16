@@ -31,13 +31,14 @@ elseif (isset($_POST['login'])) {
         $password = htmlspecialchars( $_POST['password'] );
 
         if (password_verify($password, $row['password']) == true) {
-            header("Location: app.php");
+            
 
-            $_SESSION['user_id'] = $row['userid'];
+            $_SESSION['userid'] = $row['user_id'];
             $_SESSION['login'] = $row['login'];
             $_SESSION['logged'] = true;
 
             $connect->close();
+            header("Location: app.php");
             exit();
         }
         else{
