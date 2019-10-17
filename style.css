@@ -1,5 +1,8 @@
 body{
     background-color: darkgray;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    padding-top: 100px;
+    padding-left: 100px;
 }
 
 a:active{
@@ -58,12 +61,13 @@ a{
 }
 
 .character-form{
-    background-color: aquamarine;
+    background-color: #7aa38d;
     width: 300px;
     padding: 20px;
     float: right;
     margin-right: 150px;
-    margin-top: 70px;
+    
+    box-shadow:1px 1px 10px #000;
 }
 
 .character-form h2{
@@ -92,6 +96,21 @@ a{
 }
 
 .close-btn:hover{
-    background-color: #666;
+    background-color: #444;
     cursor: pointer;
+
+}
+
+.delete-hero-class{
+    float: right;
+
+}
+
+.delete-confirm{
+    width: 200px;
+    line-height: 85%;
+}
+
+.delete-input{
+    margin-top: 5px;
 }
