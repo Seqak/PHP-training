@@ -10,7 +10,7 @@ if (!$_SESSION['logged']) {
 
 $userID = $_SESSION['userid'];
 $userLogin = $_SESSION['login'];
-$herofkId1 = $_SESSION['herofkid'];
+//$herofkId1 = $_SESSION['herofk'];
 
 echo "Zalogowano do konta gracza " . "<span style='color: blue'><strong>$userLogin</strong></span> ". "<br><br>";
 
@@ -62,7 +62,6 @@ if (isset($_POST['hero-name'])) {
     $heroNameQuery = $connect->query("SELECT hero_id FROM hero WHERE name='$heroName'");
 
     $heroNameResult = $heroNameQuery->num_rows;
-    echo "Ilość rezultów " . $heroNameResult;
     if ($heroNameResult > 0) {
         $_SESSION["e_hero_name"] = '<span style="color: red">Podana nazwa już jest zajęta.</span><br>';
 
@@ -102,29 +101,32 @@ if (isset($_POST['hero-name'])) {
         $heroFkResult = $heroFkQuery->fetch_assoc();
         $heroFkId = $heroFkResult['hero_id'];
         $connect->query("UPDATE users SET hero=1, hero_id='$heroFkId' WHERE user_id='$userID' ");
-
-        //Rozwiązanie problemu: Zrobienie zmiennej sesyjnej, ustawienie jej i unset!!!
+        $_SESSION['herofk'] = $heroFkId;
     }    
 }else{
 
 }
 
-echo "ID hero test: " . $herofkId1;
-
 //Display info about a created character.
 
 if (isset($_POST['hero-info-btn'])) {
 
-    
+    $heroFkId = $_SESSION['herofk'];
+    $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
+    $heroInfoQuery = $connect->query("SELECT * FROM hero WHERE hero_id='$heroFkId'");
+    $heroInfoResult = $heroInfoQuery->fetch_assoc();
 
-    //$heroFkId = $_SESSION['a'];
-    // $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
-    // $heroInfoQuery = $connect->query("SELECT * FROM hero WHERE hero_id='$heroFkId'");
-    // $heroInfoResult = $heroInfoQuery->fetch_assoc();
-
-    //var_dump($heroInfoResult);
-
-    //echo $_SESSION['testid'];
+    $heroName = $heroInfoResult['name'];
+    if ($heroInfoResult['class'] == "warrior") {
+        $heroClass = "Wojownik";
+    }
+    else{
+        $heroClass = "Mag";
+    }
+    $heroHp = $heroInfoResult['hp'];
+    $heroPower = $heroInfoResult['power'];
+    $heroExp = $heroInfoResult['exp'];
+    $heroLevel = $heroInfoResult['level_id'];
 
     echo ' 
     <div class="character-form">
@@ -135,9 +137,14 @@ if (isset($_POST['hero-info-btn'])) {
 
     <form action="app.php" method="POST">
     <h2>Postać</h2>
-    <strong>Nazwa: </strong> Seq <br><br>
-    <strong>Klasa: </strong> Wojownik<br><br>
-            <br><button type="submit" name="delete-hero-btn"><span style="color: red">Usuń Postać</span></button>
+    <strong>Imię: </strong> ' . $heroName . '<br>
+    <strong>Klasa: </strong> ' . $heroClass . '<br><br>
+    <strong>HP: </strong> ' . $heroHp . '<br>
+    <strong>Siła: </strong> ' . $heroPower . '<br>
+    <strong>EXP: </strong> ' . $heroExp . '<br>
+    <strong>Poziom: </strong> ' . $heroLevel . '<br><br>
+
+            <br><button type="submit" name="delete-hero-btn" class="delete-hero-class"><span style="color: red">Usuń Postać</span></button>
         </div>
     </div>
     </form>';
@@ -145,17 +152,24 @@ if (isset($_POST['hero-info-btn'])) {
     
 }
 
+//Delete hero
 
 if (isset($_POST['delete-hero-btn'])) {
     $connect = @new mysqli($dbHost, $dbUser, $dbPassword, $dbName);
-    $connect->query("UPDATE users SET hero=0 WHERE user_id='$userID' ");
+    $heroid = $_SESSION['herofk'];
+
+    $connect->query("UPDATE users SET hero=0, hero_id=NULL WHERE user_id='$userID' ");
+    $connect->query("DELETE FROM hero WHERE hero_id='$heroid'");
+    unset($_SESSION['herofk']);
 }
 
-
-
-
-
-//Display info about a created character.
+if (isset($_SESSION['herofk'])) {
+    if ($_SESSION['herofk'] != NULL) {
+        echo '  <form action="startgame.php" method="POST">
+                    <button type="submit">Rozpocznij grę!</button>
+                </form>';
+    }
+}
 
 
 ?>
@@ -197,23 +211,15 @@ if (isset($_POST['delete-hero-btn'])) {
                 <button name="hero-info-btn" class="trigger" >Pokaż postać</button>
                 </form>'; 
             }
-           
-
-            echo "STATUS: " . $heroStatus;
-            echo "<br> USER ID = " . $userID;
          ?>       
                 <!-- modal -->
 
         <div class="main-form">
         <form action="app.php" method="POST">
             <button type="submit" name="logout-btn">Logout</button>
-            <!-- <button type="submit" name="db-btn">Dodaj do DB</button> -->
         </form>
         </div>
-
         
-
-        <script src="main.js"> </script>
     </body>
 </html>
 
